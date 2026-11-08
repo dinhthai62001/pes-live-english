@@ -24,6 +24,7 @@ import {
   topicList,
   packList,
   hasPack,
+  getLatestCustomPackId,
   saveCustomPack,
   deleteCustomPack,
   exportPackToCsv,
@@ -89,14 +90,15 @@ const game = {
   hintTimers: [],
   botTimers: [],
   settings: {
-    pack: "ngay5",
+    pack: getLatestCustomPackId() || "ngay5",
     mode: "mix",
     topic: "all",
     introMs: 3500,
-    mcqMs: 20000,
-    fillMs: 26000,
-    resultMs: 11000,
+    mcqMs: 12000,
+    fillMs: 15000,
+    resultMs: 10000,
     voice: true,
+    skipExplain: true,
   },
 };
 
@@ -685,7 +687,7 @@ function classStreakUpdate(correctN, answeredN) {
 }
 
 const PROMO_TEXT =
-  "Mọi người đừng tặng quà cho mình nha! ❤️ Ghé giỏ hàng chọn một quyển sách từ vựng hoặc luyện đọc tiếng Anh phù hợp bản thân để mỗi ngày giỏi hơn một chút nhé! 🥰";
+  "Mọi người tương tác với mình nhé! 🥰";
 export const TEASES = [
   "Sách úp mặt rồi, suy nghĩ lại nha! 📖",
   "Đừng buồn, Po cũng hay nhầm lắm! 🌟",
@@ -959,10 +961,9 @@ function endRound() {
     board: getBoard(),
   };
   // Qua câu mới khi trang lớp học báo đã đọc xong (/api/result-done). resMs chỉ là mức chờ tối đa phòng khi không có trang nào phát được tiếng.
-  const resMs = Math.max(
-    game.settings.resultMs,
-    q.mode === "translate" ? 26000 : 22000,
-  );
+  const resMs = !game.settings.skipExplain
+    ? Math.max(game.settings.resultMs, q.mode === "translate" ? 26000 : 22000)
+    : Math.max(game.settings.resultMs, 6000);
   setPhase("result", resMs);
   broadcast({
     type: "result",
@@ -1497,7 +1498,7 @@ app.delete("/api/packs/:id", (req, res) => {
       .json({ ok: false, error: "Không tìm thấy bộ đề CSV cần xoá." });
   }
   if (game.settings.pack === packId) {
-    game.settings.pack = "ngay5";
+    game.settings.pack = getLatestCustomPackId() || "ngay5";
     game.settings.topic = "all";
   }
   broadcast({
@@ -1713,6 +1714,7 @@ app.post("/api/control", (req, res) => {
       st.topic = value.topic;
     else st.topic = "all";
     if (typeof value.voice === "boolean") st.voice = value.voice;
+    if (typeof value.skipExplain === "boolean") st.skipExplain = value.skipExplain;
     for (const k of ["mcqMs", "fillMs", "resultMs"])
       if (Number(value[k]) >= 5000 && Number(value[k]) <= 90000)
         st[k] = Number(value[k]);

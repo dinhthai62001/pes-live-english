@@ -15,6 +15,13 @@ export { NGAY1_SIZE, NGAY2_SIZE, NGAY3_SIZE, NGAY4_SIZE, NGAY5_SIZE };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CUSTOM_PACKS_DIR = path.join(__dirname, "custom-packs");
 
+let latestCustomPackId = null;
+let latestCustomPackTime = 0;
+
+export function getLatestCustomPackId() {
+  return latestCustomPackId;
+}
+
 const KEYS = ["A", "B", "C", "D"];
 const shuffle = (items) => {
   const result = [...items];
@@ -91,7 +98,24 @@ export function hasPack(packId) {
 }
 
 export function packList() {
-  const list = [
+  const customList = [];
+  for (const [id, p] of Object.entries(PACKS)) {
+    if (!p.builtin) {
+      customList.push({
+        id,
+        name: `📄 [CSV] ${p.rawName || p.name} (${p.size} câu)`,
+        rawName: p.rawName || p.name,
+        builtin: false,
+        size: p.size,
+        mcqCount: p.meta?.filter((m) => m.type === "mcq").length || 0,
+        fillCount: p.meta?.filter((m) => m.type === "fill").length || 0,
+      });
+    }
+  }
+  if (latestCustomPackId) {
+    customList.sort((a, b) => (b.id === latestCustomPackId ? 1 : 0) - (a.id === latestCustomPackId ? 1 : 0));
+  }
+  const builtinList = [
     PACKS.ngay1,
     PACKS.ngay2,
     PACKS.ngay4,
@@ -104,25 +128,14 @@ export function packList() {
       size: (OLD.BANK_SIZE?.mcq || 0) + (OLD.BANK_SIZE?.fill || 0),
     },
   ];
-  for (const [id, p] of Object.entries(PACKS)) {
-    if (!p.builtin) {
-      list.push({
-        id,
-        name: `📄 [CSV] ${p.rawName || p.name} (${p.size} câu)`,
-        rawName: p.rawName || p.name,
-        builtin: false,
-        size: p.size,
-        mcqCount: p.meta.filter((m) => m.type === "mcq").length,
-        fillCount: p.meta.filter((m) => m.type === "fill").length,
-      });
-    }
-  }
-  return list.map((p) => ({
+  return [...customList, ...builtinList].map((p) => ({
     id: p.id,
     name: p.name,
     rawName: p.rawName || p.name,
     builtin: Boolean(p.builtin),
     size: p.size || 0,
+    mcqCount: p.mcqCount ?? p.size ?? 0,
+    fillCount: p.fillCount ?? 0,
   }));
 }
 
@@ -465,11 +478,14 @@ export function saveCustomPack({ name, csvText, id }) {
 
   fs.mkdirSync(CUSTOM_PACKS_DIR, { recursive: true });
   const filePath = path.join(CUSTOM_PACKS_DIR, `${packId}.json`);
+  const now = Date.now();
   fs.writeFileSync(
     filePath,
-    JSON.stringify({ id: packId, name: cleanName, updatedAt: Date.now(), csvText }, null, 2),
+    JSON.stringify({ id: packId, name: cleanName, updatedAt: now, csvText }, null, 2),
     "utf8",
   );
+  latestCustomPackId = packId;
+  latestCustomPackTime = now;
   return {
     id: packId,
     name: pack.name,
@@ -488,6 +504,22 @@ export function deleteCustomPack(packId) {
   if (idx >= 0) PACK_IDS.splice(idx, 1);
   const filePath = path.join(CUSTOM_PACKS_DIR, `${packId}.json`);
   if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  if (latestCustomPackId === packId) {
+    latestCustomPackId = null;
+    latestCustomPackTime = 0;
+    try {
+      const files = fs.readdirSync(CUSTOM_PACKS_DIR).filter((f) => f.endsWith(".json"));
+      for (const file of files) {
+        const fullPath = path.join(CUSTOM_PACKS_DIR, file);
+        const data = JSON.parse(fs.readFileSync(fullPath, "utf8"));
+        const t = Number(data?.updatedAt) || fs.statSync(fullPath).mtimeMs || 0;
+        if (t >= latestCustomPackTime && data?.id && PACKS[data.id]) {
+          latestCustomPackTime = t;
+          latestCustomPackId = data.id;
+        }
+      }
+    } catch {}
+  }
   return true;
 }
 
@@ -621,11 +653,17 @@ function loadCustomPacksFromDisk() {
     const files = fs.readdirSync(CUSTOM_PACKS_DIR).filter((f) => f.endsWith(".json"));
     for (const file of files) {
       try {
-        const data = JSON.parse(fs.readFileSync(path.join(CUSTOM_PACKS_DIR, file), "utf8"));
+        const fullPath = path.join(CUSTOM_PACKS_DIR, file);
+        const data = JSON.parse(fs.readFileSync(fullPath, "utf8"));
         if (data?.id && data?.csvText) {
           const pack = buildCustomPackFromCsv(data.id, data.name || data.id, data.csvText);
           PACKS[data.id] = pack;
           if (!PACK_IDS.includes(data.id)) PACK_IDS.push(data.id);
+          const t = Number(data.updatedAt) || fs.statSync(fullPath).mtimeMs || 0;
+          if (t >= latestCustomPackTime) {
+            latestCustomPackTime = t;
+            latestCustomPackId = data.id;
+          }
         }
       } catch (e) {
         console.warn("[CSV Pack] Bỏ qua file lỗi:", file, e.message);

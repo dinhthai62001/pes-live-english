@@ -3652,7 +3652,7 @@
           o.push({ l: "en", t: cleanTts(m.answer.text) });
           if (m.answer.full) o.push({ l: "en", t: cleanTts(m.answer.full) });
         }
-        if (m.explain) {
+        if (m.explain && !S.settings?.skipExplain) {
           const words = (s) =>
             String(s || "")
               .toLowerCase()
@@ -3671,66 +3671,89 @@
         if (first) {
         
 const PRAISES = [
-  "Slay quá trời! Pha này không có điểm nào để trừ!",
-  "Gút chóp! Cô Pess xin phép trao cúp vàng!",
-  "Ủa alo? Kiến thức gì mà bén dữ vậy!",
-  "Não chạy hệ Premium hay gì mà nhanh thế!",
-  "Po vừa load đề xong, bạn đã chốt đáp án rồi!",
-  "Quá cháy! Kiến thức này đúng là có đầu tư!",
-  "Cô Pess xin cúi đầu trước chiếc não siêu cấp này!",
-  "Trời ơi! Ai bật chế độ thiên tài cho bạn vậy?",
-  "Chiến thần tiếng Anh chính thức lộ diện!",
-  "Chuẩn bài! Không lệch một milimet!",
-  "Đáp án này phải được đóng khung treo giữa lớp!",
-  "Nhanh gọn lẹ! Không cho deadline có cơ hội dí!",
-  "Cả lớp ơi, nhân tài xuất hiện rồi đây!",
-  "Cao thủ giấu nghề cuối cùng cũng chịu ra tay!",
-  "Não ơi là não! Nay hoạt động hết công suất luôn!",
-  "Cô Pess muốn xin vía học giỏi từ bạn quá!",
-  "Hay quá trời! Pha này đúng là hết cứu!",
-  "Đúng phóc! Po xin nhận một cú wow!",
-  "Xin giới thiệu: thiên tài tiếng Anh của ngày hôm nay!",
-  "Bạn làm cô Pess tự hào muốn bật chế độ pháo hoa!",
-  "Quá slay! Màn thể hiện này đúng chuẩn spotlight!",
-  "Não bạn chắc vừa được update phiên bản mới!",
-  "Vừa nhanh vừa chuẩn, combo này ai đỡ nổi!",
-  "Trình này mà còn giấu thì hơi phí nha!",
-  "Pha này phải có nhạc chiến thắng mới xứng!",
-  "Lớp trưởng tương lai đã chính thức lộ diện!",
-  "Po xin phép lưu đáp án vào bảo tàng huyền thoại!",
-  "Xuất sắc! Không có chữ nhưng nào ở đây hết!",
-  "Không phải dạng vừa, mà là dạng quá xuất sắc!",
-  "Cô Pess chấm 10 điểm, cộng thêm 100 điểm thần thái!",
-  "Khoan đã! Cho Po thời gian load với!",
-  "Ủa rồi ai cho phép bạn giỏi vượt chỉ tiêu vậy?",
-  "Pha xử lý này xứng đáng lên bảng vàng!",
-  "Flex kiến thức nhẹ thôi mà cả lớp phải trầm trồ!",
-  "Bạn học tiếng Anh bằng Wi-Fi tốc độ cao à?",
-  "Đỉnh thật sự! Đối thủ chắc đang xin thêm thời gian!",
-  "Rep đáp án còn nhanh hơn người ta rep crush!",
-  "Thiên tài mode: ON! Không ai tắt được!",
-  "Po xin phép phong bạn làm huyền thoại lớp học!",
-  "Cô Pess vừa chứng kiến một pha xử lý quá mượt!",
-  "Não chạy nhanh hơn cả thông báo lương về!",
-  "Đúng quá! Bắt lỗi bạn chắc phải đi học lại!",
-  "Bạn đang bật chế độ ánh sáng hay sao vậy?",
-  "Out trình nhẹ nhàng, nhưng sát thương cực mạnh!",
-  "Một chữ thôi: SLAY! Hai chữ: QUÁ SLAY!",
-  "Chưa cần xem đáp án, thần thái đã nói lên tất cả!",
-  "Spotlight hôm nay xin phép thuộc về bạn!",
-  "Kiến thức đầy bình, phong độ đầy mình!",
-  "Po nghi ngờ bạn vừa mở khóa kỹ năng bí mật!",
-  "Cô Pess trao danh hiệu chiến thần tiếng Anh!",
-  "TOP SPEED! Bạn vừa chiếm trọn spotlight!",
-  "Đối thủ chưa kịp nhập cuộc, bạn đã về đích!",
-  "Tốc độ này chắc kết nối thẳng vệ tinh rồi!",
-  "Quán quân tốc độ hôm nay chính thức có chủ!",
-  "Po còn chưa chớp mắt mà bạn đã trả lời xong!",
-  "Nhanh hơn cả Po nghe tiếng đồ ăn giao tới!",
-  "Người ta còn đang đọc đề, bạn đã ăn mừng!",
-  "Phản xạ đỉnh cao! Cô Pess xin một tràng pháo tay!",
-  "Nhanh và đúng! Combo này đúng là vô đối!",
-  "TOP 1 không phải tự nhiên mà có, quá xứng đáng!",
+  // 60 CÂU ĐÃ ĐƯỢC LÀM MỚI (Khác biệt, bắt trend, mặn mòi hơn)
+  "Slay chấn động! Điểm 10 không có nhưng!",
+  "Đỉnh của chóp! Cô Pess mang cúp vàng tới tận nhà trao luôn!",
+  "Bén ngót! Não bạn mài bằng đá bào hay gì mà sắc bén vậy?",
+  "Tài khoản não bộ chắc chắn là gói VIP Premium không quảng cáo!",
+  "Po còn đang đánh vần chữ đầu tiên, bạn đã chốt xong đơn!",
+  "Cháy rực rỡ! Đầu tư kiến thức quả này sinh lời khủng rồi!",
+  "Cô Pess xin thả ngàn tim cho hệ điều hành siêu cấp của bạn!",
+  "Hảo hán! Xin hỏi cao nhân thuộc môn phái nào mà nội công thâm hậu vậy?",
+  "Hệ tư tưởng học bá IELTS 9.0 chính thức gọi tên bạn!",
+  "Khớp lệnh 100%! Sai số bằng 0 tuyệt đối!",
+  "Bảo tàng Louvre xin phép mượn đáp án này về trưng bày gấp!",
+  "Tốc độ ánh sáng! Deadline còn chưa kịp nhìn thấy bóng lưng bạn!",
+  "Loa loa loa! Xin chú ý, có một thiên tài vừa hạ phàm giữa lớp chúng ta!",
+  "Tuyệt kỹ giấu nghề bấy lâu nay cuối cùng cũng bộc phát!",
+  "CPU não bộ chạy mượt quá, tản nhiệt cũng không kịp với độ cháy này!",
+  "Cô Pess lén lấy điện thoại ghi âm lại để về tụng xin vía học giỏi đây!",
+  "Quá mượt! Pha ghi điểm này đúng là đi vào lồng bàn!",
+  "Chuẩn không cần chỉnh! Po há hốc mồm rớt cả miếng ăn!",
+  "Xin nhường thảm đỏ cho idol học thuật của ngày hôm nay!",
+  "Cô Pess tự hào đến mức muốn bắn pháo bông giữa ban ngày!",
+  "Keo lỳ! Hào quang rực rỡ chói mù mắt đối thủ!",
+  "Hệ điều hành của bạn chắc vừa update lên iOS 100 rồi đúng không?",
+  "Combo 'fast & furious' này thì giáo sư cũng xin nhường bước!",
+  "Trình độ này mà đi thi quốc tế thì đối thủ chỉ có nước khóc thét!",
+  "DJ đâu? Lên nhạc vinh danh chiến thần ngay và luôn!",
+  "Ghế thủ khoa năm nay chắc chắn phải khắc tên bạn rồi!",
+  "Po đang tạc đáp án này lên bia đá để truyền lại cho hậu thế!",
+  "Xuất sắc đến mức từ điển cũng không tìm được từ để khen thêm!",
+  "Không phải dạng vừa, mà là dạng siêu to khổng lồ luôn!",
+  "Cô Pess chốt 10 điểm, bonus thêm một phiếu bé ngoan nạm kim cương!",
+  "Từ từ bạn ơi! Mạng nhà Po 5G còn không theo kịp tốc độ nảy số của bạn!",
+  "KPI học giỏi tháng này bạn chạy lố quá rồi nha, chừa phần người khác với!",
+  "Sách kỷ lục Guinness đang cử người qua lấy chữ ký bạn đó!",
+  "Flex mượt mà đến mức không ai dám cãi nửa lời!",
+  "Ăn sạc dự phòng hay gì mà năng lượng học tập chói lóa vậy trời?",
+  "Đối thủ đang khóc thét xin ngưng đọng thời gian kìa!",
+  "Tốc độ nảy số nhanh hơn cả người yêu cũ lật mặt!",
+  "Buff nội tại quá mạnh, ai chơi lại bạn trong cái trận này!",
+  "Po xin phép dán ảnh bạn lên góc 'Gương mặt vàng trong làng giải đề'!",
+  "Cô Pess xem xong pha múa phím này mãn nhãn thực sự!",
+  "Não nảy số còn lẹ hơn tốc độ chốt đơn ngày siêu sale!",
+  "Muốn tìm điểm sai của bạn chắc phải mua kính hiển vi!",
+  "Hack speed hả bạn? Sao vừa thấy đề đã thấy đáp án rồi?",
+  "Out trình một cách quý tộc, sát thương vật lý 1000%!",
+  "Quá xịn! Đọc đáp án mà muốn rớt nước mắt vì tự hào!",
+  "Chỉ cần nhìn thần thái gõ phím là biết điểm tuyệt đối rồi!",
+  "Camera man quay cận cảnh nhân vật chính của ngày hôm nay hộ tôi!",
+  "Mana full bình, skill tung ra phát nào chí mạng phát đó!",
+  "Po đang check VAR xem bạn có xài chiêu cuối bí mật gì không!",
+  "Cô Pess xin trao tặng huân chương 'Kẻ hủy diệt đề thi' cho bạn!",
+  "Top 1 sever! Chớp mắt cái đã thấy bạn đứng trên đỉnh vinh quang!",
+  "Người ta mới xỏ giày, bạn đã giật giải đi về mất tiêu!",
+  "Lắp mô-tơ vào não hay gì mà tốc độ kinh hoàng thế này!",
+  "Cúp vô địch đua xe F1 xin phép nhường cho tốc độ làm bài của bạn!",
+  "Po vừa ngáp một cái là mất luôn lượt với bạn!",
+  "Nhanh hơn cả tốc độ shipper nhấn chuông trước cửa nhà Po!",
+  "Trọng tài chưa thổi còi mà bạn đã sút tung lưới nhà người ta rồi!",
+  "Phản xạ như Ninja! Cô Pess phải đứng lên vỗ tay liền!",
+  "Chính xác và chớp nhoáng! Bạn đang múa trên bàn phím đúng không?",
+  "Đẳng cấp không cần chứng minh, Top 1 vĩnh viễn khóa tên bạn!",
+
+  // 20 CÂU THÊM MỚI (Tăng cường độ mặn)
+  "Cô Pess suýt đánh rơi kính vì đáp án quá xuất thần!",
+  "Po xin nguyện làm fan cứng trọn đời của chiếc não vĩ đại này!",
+  "Kiến thức đi vào lòng người, điểm số đi thẳng lên đỉnh chóp!",
+  "Đường truyền kiến thức của bạn chắc chắn dùng cáp quang xịn nhất Đông Dương!",
+  "Dấu ấn cá nhân đậm nét! Làm bài mà như nghệ sĩ đang biểu diễn vậy!",
+  "Chữ 'Giỏi' không đủ diễn tả, phải dùng chữ 'Huyền Thoại' mới xứng!",
+  "Đánh bại mọi định luật vật lý, tốc độ não bạn là nhanh nhất vũ trụ!",
+  "Cô Pess giấu vội mấy đề khó vì biết đưa ra bạn cũng giải phát một!",
+  "Trang bách khoa toàn thư chạy bằng cơm xin phép được gọi tên bạn!",
+  "Mượt như Sunsilk! Không có một vết xước nào trong câu trả lời này!",
+  "Po nể phục sát đất, xin bái bạn làm sư phụ ngay và luôn!",
+  "Không phải giải bài, mà là bạn đang lướt ván trên đống kiến thức!",
+  "Ai đó làm ơn cản bạn lại, chứ bạn giỏi hết phần thiên hạ rồi!",
+  "Điểm tuyệt đối vẫn chưa lột tả hết độ xịn xò của pha xử lý này!",
+  "Chấn động địa cầu! Một cơn bão IQ vừa càn quét qua đây!",
+  "Cô Pess đang soạn sẵn thư giới thiệu học bổng toàn phần cho bạn rồi!",
+  "Bạn vừa nuốt trọn cả cuốn từ điển vào bụng trước khi học đúng không?",
+  "Po tưởng đang xem phim khoa học viễn tưởng vì bộ não siêu phàm này!",
+  "Nhìn bạn làm bài mà ngỡ như siêu máy tính lượng tử đang chạy thuật toán!",
+  "Chỉ một từ thôi: ĐỈNH! Hai từ: QUÁ ĐỈNH!"
 ];
           const nick = first.nick
             ? `, biệt danh ${cleanTts(first.nick.t)}`
@@ -4418,10 +4441,11 @@ const PRAISES = [
               ? ` · Cũng đúng: ${esc(r.answer.alts[0])}`
               : ` (hoặc ${r.answer.alts.map(esc).join(", ")})`
             : "";
+        const showExp = !S.settings?.skipExplain && r.explain;
         const why =
           !mc && r.answer.full
-            ? `${esc(r.answer.full)}${esc(alt)}${r.explain ? " · " + esc(r.explain) : ""}`
-            : esc((r.explain || "") + alt);
+            ? `${esc(r.answer.full)}${esc(alt)}${showExp ? " · " + esc(r.explain) : ""}`
+            : esc(((showExp ? r.explain : "") || "") + alt);
         const dist = mc
           ? `<div class="dist">${["A", "B", "C", "D"].map((k) => `<div class="${k === r.answer.key ? "ok" : ""}">${k} <b>${r.dist[k] || 0}</b>${k === r.answer.key ? " ✓" : ""}</div>`).join("")}</div>`
           : "";
@@ -5640,7 +5664,7 @@ const IDLE = [
                 if (VOICE_ON() && !spoke) return; // chặn tiếng: không tự qua câu
                 await sleep(
                   spoke
-                    ? 1800
+                    ? (!S.settings?.skipExplain ? 1800 : 1000)
                     : Math.max(
                         0,
                         (S.settings?.resultMs || 11000) - (Date.now() - t0),

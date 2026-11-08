@@ -329,11 +329,12 @@
     </label>
     <label><small>Chủ đề</small><select id="selTopic"><option value="all">Tất cả chủ đề</option></select></label>
     <div class="row">
-      <label><small>Giây / câu chọn đáp án</small><input id="tMcq" type="number" min="5" max="90" value="20"></label>
-      <label><small>Giây / câu điền từ</small><input id="tFill" type="number" min="5" max="90" value="26"></label>
+      <label><small>Giây / câu chọn đáp án</small><input id="tMcq" type="number" min="5" max="90" value="12"></label>
+      <label><small>Giây / câu điền từ</small><input id="tFill" type="number" min="5" max="90" value="15"></label>
       <label><small>Giây xem kết quả</small><input id="tRes" type="number" min="5" max="90" step="0.5" value="11"></label>
     </div>
     <label class="toggle-row"><input type="checkbox" id="chkVoice" checked><span>🔊 Đọc câu hỏi, đáp án và lời cảm ơn quà bằng giọng nói</span></label>
+    <label class="toggle-row"><input type="checkbox" id="chkSkipExplain" checked><span>⏭️ Không đọc giải thích (cột explain) — qua câu tiếp theo luôn</span></label>
     <div class="row" style="align-items:flex-end">
             <label style="flex:1;min-width:220px"><small>Lời tiếng Việt cho Po/Pess đọc</small><input id="customSpeech" maxlength="500" placeholder="Nhập lời muốn đọc…"></label>
       <label style="min-width:110px"><small>Người đọc</small><select id="customSpeaker"><option value="bop">🐻 Po (Nam)</option><option value="mi">🐱 Pess (Nữ)</option></select></label>
@@ -477,8 +478,9 @@ $('#csvFileInput').onchange = async (e) => {
     const csvText = await file.text();
     const defaultName = file.name.replace(/\.csv$/i, '').trim();
     const customName = $('#csvPackName').value.trim() || defaultName || 'Bộ đề CSV';
-    const res = await post('/api/packs/import', { name: customName, csvText, activate: true });
-    if (!res.ok) {
+    const httpRes = await post('/api/packs/import', { name: customName, csvText, activate: true });
+    const res = await httpRes.json();
+    if (!httpRes.ok || !res.ok) {
       csvStatus.style.color = '#ef4444';
       csvStatus.textContent = `❌ Lỗi Import: ${res.error || 'Không hợp lệ'}`;
       return;
@@ -511,7 +513,7 @@ $('#btnDeleteCsv').onclick = async () => {
 };
 $('#btnApply').onclick = () => post('/api/control', { action: 'settings', value: {
   pack: $('#selPack').value, mode: $('#selMode').value, topic: $('#selTopic').value,
-  voice: $('#chkVoice').checked, mcqMs: $('#tMcq').value * 1000, fillMs: $('#tFill').value * 1000, resultMs: $('#tRes').value * 1000 } });
+  voice: $('#chkVoice').checked, skipExplain: $('#chkSkipExplain').checked, mcqMs: $('#tMcq').value * 1000, fillMs: $('#tFill').value * 1000, resultMs: $('#tRes').value * 1000 } });
 $('#btnResetScores').onclick = () => confirm('Xoá toàn bộ điểm thi đua?') && post('/api/control', { action: 'reset_scores' });
 $('#btnResetAttendance').onclick = () => confirm('Xoá sạch lớp học: ghế ngồi, hành lang, điểm, chức vụ?') && post('/api/control', { action: 'reset_attendance' });
 $('#btnResetAll').onclick = () => confirm('Reset toàn bộ buổi học? Sẽ xoá lớp, điểm, quà/tim, tiến trình câu hỏi và bắt đầu lại từ câu 1.') && post('/api/control', { action: 'reset_all' });
@@ -559,6 +561,7 @@ function applySettings(st) {
   if (st.pack) $('#selPack').value = st.pack;
   updateDeleteCsvBtn();
   $('#selMode').value = st.mode; $('#selTopic').value = st.topic; $('#chkVoice').checked = st.voice !== false;
+  $('#chkSkipExplain').checked = st.skipExplain !== false;
   $('#tMcq').value = st.mcqMs / 1000; $('#tFill').value = st.fillMs / 1000; $('#tRes').value = st.resultMs / 1000;
 }
 function showQ(m) {
