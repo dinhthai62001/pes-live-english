@@ -1,0 +1,18 @@
+{
+  "name": "bop-classroom-live",
+  "version": "2.0.0",
+  "description": "Lớp học tiếng Anh của Bop – Trình phát video bài giảng tương tác TikTok LIVE và Web",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "tiktok-live-connector": "^2.4.0",
+    "ws": "^8.18.0"
+  }
+}

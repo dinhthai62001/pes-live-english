@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bảng Điều Khiển · Lớp Học English A1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b101b;
+    --card: #151d30;
+    --card-hover: #1e2942;
+    --line: rgba(148, 163, 184, 0.18);
+    --gold: #f59e0b;
+    --gold-glow: rgba(245, 158, 11, 0.25);
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --ok: #10b981;
+    --bad: #ef4444;
+    --primary: #3b82f6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 14.5px/1.5 'Be Vietnam Pro', system-ui, sans-serif;
+    padding: 20px;
+  }
+
+  .top-bar {
+    max-width: 1200px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .top-bar h1 {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--gold);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .quick-links {
+    display: flex;
+    gap: 10px;
+  }
+
+  .quick-link-btn {
+    background: rgba(59, 130, 246, 0.15);
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    color: #93c5fd;
+    padding: 6px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .quick-link-btn:hover { background: rgba(59, 130, 246, 0.3); }
+
+  .grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .card h2 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  input, select {
+    background: #0d1424;
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font: inherit;
+    width: 100%;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+
+  .row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .row > * { flex: 1; }
+
+  button {
+    background: #202b44;
+    border: 1px solid var(--line);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  button:hover {
+    border-color: var(--gold);
+    background: #2a3756;
+  }
+  button.pri {
+    background: var(--gold);
+    color: #111827;
+    border: 0;
+    font-weight: 700;
+  }
+  button.pri:hover { background: #d97706; }
+  button.danger {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #fca5a5;
+  }
+  button.danger:hover { background: rgba(239, 68, 68, 0.4); }
+
+  .dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #777;
+    margin-right: 6px;
+  }
+  .dot.connected { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
+  .dot.error, .dot.ended, .dot.disconnected { background: var(--bad); }
+  .dot.connecting { background: #eab308; }
+
+  /* Bảng chọn bài học */
+  .lesson-table {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 380px;
+    overflow-y: auto;
+  }
+
+  .lesson-row {
+    background: rgba(13, 20, 36, 0.8);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .lesson-row.current {
+    border-color: var(--gold);
+    background: rgba(245, 158, 11, 0.12);
+  }
+
+  .lesson-row-title {
+    flex: 1;
+    min-width: 0;
+  }
+  .lesson-row-en { font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .lesson-row-vi { font-size: 12px; color: var(--muted); }
+
+  .badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .badge-playing { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid var(--ok); }
+  .badge-vote { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+
+  /* Nhật ký sự kiện */
+  #log {
+    height: 220px;
+    overflow-y: auto;
+    font: 12.5px/1.6 ui-monospace, Consolas, monospace;
+    background: #090e17;
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: var(--muted);
+    border: 1px solid var(--line);
+  }
+  #log div { margin-bottom: 2px; }
+  small { color: var(--muted); font-size: 12px; }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .toggle-row input { width: auto; }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <h1>🎓 Bảng Điều Khiển · Lớp Học English A1</h1>
+  <div class="quick-links">
+    <a href="/?clean=1" target="_blank" class="quick-link-btn">
+      <span>📺</span> Mở Màn Hình LIVE (OBS/Studio)
+    </a>
+    <a href="/" target="_blank" class="quick-link-btn">
+      <span>🌐</span> Mở Xem Trên Web
+    </a>
+  </div>
+</div>
+
+<div class="grid">
+  <!-- Card 1: Kết nối TikTok LIVE -->
+  <div class="card">
+    <h2>1 · Kết Nối TikTok LIVE</h2>
+    <small>Nhập tên kênh TikTok <b>đang phát trực tiếp</b> (không cần @):</small>
+    <div class="row">
+      <input id="user" placeholder="vd: kenhtienganhcuapesspo">
+    </div>
+    <div class="row">
+      <button class="pri" id="btnConnect">🔗 Kết Nối Kênh</button>
+      <button id="btnDisconnect">Ngắt</button>
+    </div>
+    <div id="status">
+      <span class="dot" id="dot"></span>
+      <span id="stxt">Chưa kết nối TikTok</span>
+    </div>
+  </div>
+
+  <!-- Màn hình chờ trước giờ live -->
+  <div class="card">
+    <h2>⏰ Màn Hình Chờ Trước Giờ Live</h2>
+    <div class="row">
+      <label><small>Giờ vào học (hôm nay; giờ đã qua thì tính là ngày mai)</small><input id="waitTime" type="time"></label>
+      <button id="btnWait" class="pri">⏳ Bật Màn Hình Chờ</button>
+    </div>
+    <div class="row">
+      <button id="btnW5">+5 phút</button>
+      <button id="btnW10">+10 phút</button>
+      <button id="btnW30">+30 phút</button>
+      <button id="btnWNow">▶ Bắt Đầu Ngay</button>
+    </div>
+    <small id="waitStatus">Chưa bật màn hình chờ.</small>
+  </div>
+
+  <!-- Card 2: Điều khiển bài tập -->
+  <div class="card">
+    <h2>2 · Điều Khiển Bài Tập</h2>
+    <div id="curQ" style="background:#0d1424;border:1px solid var(--line);border-radius:10px;padding:10px 12px;min-height:64px">
+      <small>Đang nạp…</small>
+    </div>
+    <div class="row">
+      <button id="btnPlay" class="pri">▶ Tiếp Tục</button>
+      <button id="btnPause">⏸ Giải Lao</button>
+      <button id="btnSkip">⏭ Qua Câu Này</button>
+      <button id="btnRestart">🔄 Bắt Đầu Lại</button>
+      <button id="btnHearts">❤️ Nhắc thả tim</button>
+      <button id="btnFollow">➕ Kêu gọi Follow</button>
+      <button id="btnListening" class="pri">🎧 Luyện Skill Listening</button>
+      <button id="btnListenStop">✖ Tắt Listening</button>
+      <button id="btnPromo">📚 Giới thiệu sách</button>
+      <button id="btnEnd" class="danger">🏁 Kết Thúc Live</button>
+    </div>
+    <label><small>Bộ bài</small>
+      <select id="selPack">
+        <option value="ngay1">📘 Ngày 1 · 100 bài mới (có dịch câu), ra theo thứ tự</option>
+        <option value="ngay2">📗 Ngày 2 · 100 bài A2+ khó hơn (dịch câu, chọn đáp án), ra theo thứ tự</option>
+        <option value="ngay4">📗 Ngày 4 · 100 bài dễ hơn Ngày 3 (giải thích Word pattern / Ngữ pháp / Phrasal verb)</option>
+        <option value="ngay5">📘 Ngày 5 · A2 trở xuống (3 điền từ, 1 chọn câu)</option>
+        <option value="ngay3">📙 Ngày 3 · 100 bài dễ hơn Ngày 2 một xíu (có điền từ theo nghĩa), ra theo thứ tự</option>
+        <option value="cu">📦 Ngân hàng cũ A2 · ra ngẫu nhiên</option>
+      </select>
+    </label>
+    <div style="background:#0d1424;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin:2px 0">
+      <div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:6px">📄 Quản lý Tài Liệu Học bằng CSV (Import / Export)</div>
+      <div class="row" style="gap:8px;align-items:flex-end">
+        <label style="flex:1;min-width:160px"><small>Tên bộ đề khi Import (bỏ trống = lấy tên file)</small>
+          <input id="csvPackName" maxlength="60" placeholder="VD: Buổi 6 - Từ vựng Du lịch">
+        </label>
+        <input id="csvFileInput" type="file" accept=".csv,text/csv" style="display:none">
+        <button id="btnImportCsv" class="ok" type="button">📂 Import CSV</button>
+        <button id="btnExportCsv" type="button">📤 Export CSV đang chọn</button>
+        <button id="btnSampleCsv" type="button">⬇️ Tải CSV Mẫu</button>
+        <button id="btnDeleteCsv" class="danger" type="button" style="display:none">🗑️ Xoá CSV</button>
+      </div>
+      <small id="csvStatus" style="display:block;margin-top:6px;color:var(--muted)">Hỗ trợ 3 dạng trong 1 file CSV: <b>fill</b> (điền từ), <b>mcq</b> (trắc nghiệm A/B/C/D), <b>translate</b> (dịch câu).</small>
+    </div>
+    <label><small>Dạng bài</small>
+      <select id="selMode">
+        <option value="mix">Xen kẽ tất cả dạng</option>
+        <option value="mcq">Chỉ chọn đáp án A/B/C/D</option>
+        <option value="fill">Chỉ điền từ (từ vựng)</option>
+        <option value="translate">Chỉ dịch câu Việt → Anh</option>
+      </select>
+    </label>
+    <label><small>Chủ đề</small><select id="selTopic"><option value="all">Tất cả chủ đề</option></select></label>
+    <div class="row">
+      <label><small>Giây / câu chọn đáp án</small><input id="tMcq" type="number" min="5" max="90" value="20"></label>
+      <label><small>Giây / câu điền từ</small><input id="tFill" type="number" min="5" max="90" value="26"></label>
+      <label><small>Giây xem kết quả</small><input id="tRes" type="number" min="5" max="90" step="0.5" value="11"></label>
+    </div>
+    <label class="toggle-row"><input type="checkbox" id="chkVoice" checked><span>🔊 Đọc câu hỏi, đáp án và lời cảm ơn quà bằng giọng nói</span></label>
+    <div class="row" style="align-items:flex-end">
+            <label style="flex:1;min-width:220px"><small>Lời tiếng Việt cho Po/Pess đọc</small><input id="customSpeech" maxlength="500" placeholder="Nhập lời muốn đọc…"></label>
+      <label style="min-width:110px"><small>Người đọc</small><select id="customSpeaker"><option value="bop">🐻 Po (Nam)</option><option value="mi">🐱 Pess (Nữ)</option></select></label>
+      <button id="btnSpeak" class="pri">🔊 Đọc lên</button>
+    </div>
+    <div class="row">
+      <button id="btnApply" class="pri">Áp Dụng Cài Đặt</button>
+      <button id="btnResetScores">↺ Xoá Điểm</button>
+      <button id="btnResetAttendance" class="danger">Xoá Cả Lớp</button>
+      <button id="btnResetAll" class="danger">⚠ Reset Toàn Bộ</button>
+    </div>
+    <small id="bankInfo"></small>
+  </div>
+
+  <!-- Card 3: Chức vụ A1 -->
+  <div class="card">
+    <h2>3 · Chức Vụ Theo Cấp A1 (tổng xu đã tặng)</h2>
+    <div class="lesson-table" id="levelTable" style="max-height:none"></div>
+    <small>Lớp đầy ghế: bạn tặng quà được mời vào ngồi, chen vào chỗ của bạn ít điểm và ít hoạt động nhất; bạn đó ra hành lang chờ. Bạn tặng nhiều xu nhất ngồi ghế đẹp nhất (giữa lớp, hàng đầu).</small>
+  </div>
+
+  <!-- Card 4: Giả lập tương tác (Test offline) -->
+  <div class="card">
+    <h2>4 · Giả Lập Tương Tác (Test Offline)</h2>
+    <small>Thử nghiệm mà không cần phải livestream thật:</small>
+    <div class="row">
+      <input id="simName" placeholder="Tên học sinh (bỏ trống = ngẫu nhiên)">
+    </div>
+    <div class="row">
+      <button id="btnCrowd" class="pri">👥 Thêm 20 Bạn Ảo (tự trả lời)</button>
+      <button id="btnCrowd40">👥 Thêm 40</button>
+      <button id="btnBotsOff">Tắt Bạn Ảo</button>
+    </div>
+    <div class="row">
+      <button data-ans="A">Trả lời A</button>
+      <button data-ans="B">Trả lời B</button>
+      <button data-ans="C">Trả lời C</button>
+      <button data-ans="D">Trả lời D</button>
+    </div>
+    <div class="row">
+      <button id="btnSimChat">💬 Chat thường</button>
+      <button id="btnSimLike">❤️ 15 Thả Tim</button>
+      <button id="btnSimJoin">🚪 1 Bạn Vào Lớp</button>
+    </div>
+    <div class="row">
+      <button data-gift="1">🌱 1 xu · A1.1</button>
+      <button data-gift="10">📒 10 xu · A1.2</button>
+      <button data-gift="50">✏️ 50 xu · A1.3</button>
+    </div>
+    <div class="row">
+      <button data-gift="200">💬 200 xu · A1.4</button>
+      <button data-gift="500">⭐ 500 xu · A1.5</button>
+      <button data-gift="1500">👑 1500 xu · A1.6</button>
+    </div>
+  </div>
+
+  <!-- Card 5: Nhật ký sự kiện thời gian thực -->
+  <div class="card">
+    <h2>5 · Nhật Ký Sự Kiện Lớp Học</h2>
+    <div id="log"></div>
+  </div>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const post = (url, body) => fetch(url, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(body || {})
+});
+
+const NAMES = [
+  'Thu Trang', 'Hoàng Nam', 'Ngọc Hân', 'Đức Huy', 'Bảo Ngọc',
+  'Quốc Bảo', 'Mai Linh', 'Tuấn Kiệt', 'Khánh Vy', 'Gia Hưng',
+  'Phương Thảo', 'Minh Anh', 'Lan Chi', 'Thanh Tùng', 'Thảo My'
+];
+const rnd = (a) => a[Math.floor(Math.random() * a.length)];
+const simName = () => $('#simName').value.trim() || rnd(NAMES);
+
+let levels = [];
+
+// Kết nối TikTok
+$('#btnConnect').onclick = () => post('/api/connect', { username: $('#user').value });
+$('#btnDisconnect').onclick = () => post('/api/disconnect');
+
+// Điều khiển bài tập
+const waitAt = (v) => post('/api/control', { action: 'wait', value: v });
+$('#btnWait').onclick = () => { const v = $('#waitTime').value; if (!v) return alert('Chọn giờ vào học trước nhé!'); waitAt({ time: v }); };
+for (const m of [5, 10, 30]) $('#btnW' + m).onclick = () => waitAt({ inMin: m });
+$('#btnWNow').onclick = () => post('/api/control', { action: 'wait_now' });
+let waitIv = null;
+function setWaitStatus(startAt) {
+  clearInterval(waitIv);
+  const el = $('#waitStatus');
+  if (!startAt) { el.textContent = 'Chưa bật màn hình chờ.'; return; }
+  const hh = new Date(startAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+  const upd = () => { const s = Math.max(0, Math.ceil((startAt - Date.now()) / 1000)); el.textContent = `⏳ Đang chờ tới ${hh} · còn ${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; if (s <= 0) clearInterval(waitIv); };
+  upd(); waitIv = setInterval(upd, 1000);
+}
+$('#btnPlay').onclick = () => post('/api/control', { action: 'play' });
+$('#btnPause').onclick = () => post('/api/control', { action: 'pause' });
+$('#btnRestart').onclick = () => confirm('Bắt đầu lại từ câu 1? Xoá điểm và quên các câu đã ra (ghế ngồi giữ nguyên).') && post('/api/control', { action: 'restart' });
+$('#btnHearts').onclick = () => post('/api/control', { action: 'hearts' });
+$('#btnFollow').onclick = () => post('/api/control', { action: 'follow_cta' });
+$('#btnListening').onclick = () => post('/api/control', { action: 'listening' });
+$('#btnListenStop').onclick = () => post('/api/control', { action: 'listening_done' });
+$('#btnPromo').onclick = () => post('/api/control', { action: 'promo' });
+$('#btnEnd').onclick = () => confirm('Hiện màn hình kết thúc buổi live? (bấm Tiếp Tục để học lại)') && post('/api/control', { action: 'end' });
+$('#btnSkip').onclick = () => post('/api/control', { action: 'skip' });
+$('#btnSpeak').onclick = async () => {
+  const text = $('#customSpeech').value.trim();
+  if (!text) return alert('Nhập lời muốn đọc trước nhé!');
+  const res = await post('/api/control', { action: 'speak', value: { text, speaker: $('#customSpeaker').value } });
+  if (!res.ok) alert('Không gửi được lời đọc. Thử lại nhé!');
+};
+$('#customSpeech').onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('#btnSpeak').click(); } };
+function updateDeleteCsvBtn() {
+  const val = $('#selPack').value || '';
+  $('#btnDeleteCsv').style.display = val.startsWith('csv_') ? 'inline-block' : 'none';
+}
+$('#selPack').onchange = () => {
+  $('#selTopic').value = 'all';
+  updateDeleteCsvBtn();
+};
+$('#btnSampleCsv').onclick = () => {
+  window.location.href = '/api/packs/sample.csv';
+};
+$('#btnExportCsv').onclick = () => {
+  const packId = $('#selPack').value || 'ngay5';
+  window.location.href = `/api/packs/export?pack=${encodeURIComponent(packId)}`;
+};
+$('#btnImportCsv').onclick = () => $('#csvFileInput').click();
+$('#csvFileInput').onchange = async (e) => {
+  const file = e.target.files?.[0];
+  e.target.value = '';
+  if (!file) return;
+  const csvStatus = $('#csvStatus');
+  try {
+    csvStatus.style.color = 'var(--gold)';
+    csvStatus.textContent = `⏳ Đang đọc và kiểm tra file "${file.name}"...`;
+    const csvText = await file.text();
+    const defaultName = file.name.replace(/\.csv$/i, '').trim();
+    const customName = $('#csvPackName').value.trim() || defaultName || 'Bộ đề CSV';
+    const res = await post('/api/packs/import', { name: customName, csvText, activate: true });
+    if (!res.ok) {
+      csvStatus.style.color = '#ef4444';
+      csvStatus.textContent = `❌ Lỗi Import: ${res.error || 'Không hợp lệ'}`;
+      return;
+    }
+    if (res.packs) renderPacks(res.packs, res.settings?.pack || res.pack?.id);
+    if (res.topics) renderTopics(res.topics);
+    if (res.settings) applySettings(res.settings);
+    $('#csvPackName').value = '';
+    const p = res.pack;
+    const warn = p.errors?.length ? ` (bỏ qua ${p.errors.length} dòng lỗi)` : '';
+    csvStatus.style.color = '#10b981';
+    csvStatus.textContent = `✅ Đã nạp & kích hoạt "${p.rawName}": ${p.size} câu (${p.fillCount} điền/dịch, ${p.mcqCount} trắc nghiệm)${warn}.`;
+    log(`📄 Đã import bộ đề CSV: <b>${esc(p.rawName)}</b> (${p.size} câu)`);
+  } catch (err) {
+    csvStatus.style.color = '#ef4444';
+    csvStatus.textContent = `❌ Lỗi đọc file: ${err.message}`;
+  }
+};
+$('#btnDeleteCsv').onclick = async () => {
+  const packId = $('#selPack').value;
+  if (!packId || !packId.startsWith('csv_')) return;
+  if (!confirm('Xoá bộ đề CSV này khỏi hệ thống?')) return;
+  const r = await fetch(`/api/packs/${encodeURIComponent(packId)}`, { method: 'DELETE' }).then(x => x.json());
+  if (!r.ok) return alert(r.error || 'Không xoá được bộ đề.');
+  if (r.packs) renderPacks(r.packs, r.settings?.pack);
+  if (r.topics) renderTopics(r.topics);
+  if (r.settings) applySettings(r.settings);
+  $('#csvStatus').style.color = 'var(--muted)';
+  $('#csvStatus').textContent = '🗑️ Đã xoá bộ đề CSV.';
+};
+$('#btnApply').onclick = () => post('/api/control', { action: 'settings', value: {
+  pack: $('#selPack').value, mode: $('#selMode').value, topic: $('#selTopic').value,
+  voice: $('#chkVoice').checked, mcqMs: $('#tMcq').value * 1000, fillMs: $('#tFill').value * 1000, resultMs: $('#tRes').value * 1000 } });
+$('#btnResetScores').onclick = () => confirm('Xoá toàn bộ điểm thi đua?') && post('/api/control', { action: 'reset_scores' });
+$('#btnResetAttendance').onclick = () => confirm('Xoá sạch lớp học: ghế ngồi, hành lang, điểm, chức vụ?') && post('/api/control', { action: 'reset_attendance' });
+$('#btnResetAll').onclick = () => confirm('Reset toàn bộ buổi học? Sẽ xoá lớp, điểm, quà/tim, tiến trình câu hỏi và bắt đầu lại từ câu 1.') && post('/api/control', { action: 'reset_all' });
+
+// Giả lập tương tác
+document.querySelectorAll('[data-gift]').forEach(b => {
+  b.onclick = () => post('/api/sim', { type: 'gift', name: simName(), coins: Number(b.dataset.gift) });
+});
+document.querySelectorAll('[data-ans]').forEach(b => {
+  b.onclick = () => post('/api/sim', { type: 'answer', name: simName(), text: b.dataset.ans });
+});
+$('#btnSimChat').onclick = () => post('/api/sim', { type: 'chat', name: simName(), text: 'Chào Pess và Po ạ!' });
+$('#btnSimLike').onclick = () => post('/api/sim', { type: 'like', name: simName(), count: 15 });
+$('#btnSimJoin').onclick = () => post('/api/sim', { type: 'join', name: simName() });
+$('#btnCrowd').onclick = () => post('/api/sim', { type: 'crowd', n: 20 });
+$('#btnCrowd40').onclick = () => post('/api/sim', { type: 'crowd', n: 40 });
+$('#btnBotsOff').onclick = () => post('/api/sim', { type: 'bots_off' });
+
+function renderPacks(packs, selectedId) {
+  if (!Array.isArray(packs) || !packs.length) return;
+  const sel = $('#selPack');
+  const cur = selectedId || sel.value || 'ngay5';
+  sel.innerHTML = packs.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+  if ([...sel.options].some(o => o.value === cur)) sel.value = cur;
+  updateDeleteCsvBtn();
+}
+function renderLevels() {
+  $('#levelTable').innerHTML = levels.map(l => `
+    <div class="lesson-row">
+      <span style="font-weight:800;color:#111827;background:${l.color};border-radius:8px;padding:2px 8px;width:64px;text-align:center">${l.code}</span>
+      <div class="lesson-row-title">
+        <div class="lesson-row-en">${l.icon} ${esc(l.role)}</div>
+        <div class="lesson-row-vi">${esc(l.en)} · ${esc(l.perk)}</div>
+      </div>
+      <span class="badge badge-vote">${l.min}+ xu</span>
+    </div>`).join('');
+}
+function renderTopics(topics) {
+  const sel = $('#selTopic'), cur = sel.value;
+  sel.innerHTML = '<option value="all">Tất cả chủ đề</option>' + topics.map(t => `<option value="${t.id}">${t.icon} ${esc(t.en)} · ${esc(t.vi)} (${t.mcq + t.fill} câu)</option>`).join('');
+  sel.value = cur || 'all';
+}
+function applySettings(st) {
+  if (!st) return;
+  if (st.pack) $('#selPack').value = st.pack;
+  updateDeleteCsvBtn();
+  $('#selMode').value = st.mode; $('#selTopic').value = st.topic; $('#chkVoice').checked = st.voice !== false;
+  $('#tMcq').value = st.mcqMs / 1000; $('#tFill').value = st.fillMs / 1000; $('#tRes').value = st.resultMs / 1000;
+}
+function showQ(m) {
+  const q = m.q || m;
+  $('#curQ').innerHTML = `<b style="color:var(--gold)">Câu ${m.number ?? q.number} · ${esc(q.topicEn || '')}</b><br>${esc(q.emoji || '')} ${esc(q.prompt)} ${q.sub ? '<small>(' + esc(q.sub) + ')</small>' : ''}${q.options ? '<br><small>' + q.options.map(o => o.k + '. ' + esc(o.t)).join(' &nbsp; ') + '</small>' : ''}`;
+}
+
+const LABEL = {
+  idle: 'Chưa kết nối',
+  connecting: 'Đang kết nối TikTok…',
+  connected: 'Đã kết nối LIVE',
+  error: 'Lỗi kết nối',
+  ended: 'Buổi live đã kết thúc',
+  disconnected: 'Mất kết nối (đang thử lại)'
+};
+
+function log(text) {
+  const el = $('#log');
+  el.insertAdjacentHTML('afterbegin', `<div>${new Date().toLocaleTimeString('vi-VN')} · ${text}</div>`);
+  while (el.childElementCount > 300) el.lastChild.remove();
+}
+
+const esc = (s) => String(s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function connectWS() {
+  const proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
+  const ws = new WebSocket(proto + location.host + '/ws');
+
+  ws.onmessage = (e) => {
+    const m = JSON.parse(e.data);
+    if (m.type === 'init') {
+      if (m.game?.waiting) setWaitStatus(m.game.waiting.startAt);
+      levels = m.levels || [];
+      if (m.packs) renderPacks(m.packs, m.game?.settings?.pack);
+      renderLevels(); renderTopics(m.topics || []); applySettings(m.game?.settings);
+      if (m.game?.q) showQ({ q: m.game.q, number: m.game.number });
+      updateStatus(m.tiktok);
+    } else if (m.type === 'status') {
+      updateStatus(m);
+    } else if (m.type === 'question') {
+      showQ(m); log(`📝 Câu ${m.q.number} (${m.q.type === 'mcq' ? 'chọn đáp án' : 'điền từ'}): ${esc(m.q.prompt)}`);
+    } else if (m.type === 'result') {
+      log(`✅ Đáp án: ${esc(m.answer.key ? m.answer.key + ' · ' + m.answer.text : m.answer.text)} · ${m.correctCount}/${m.answeredCount} bạn đúng`);
+    } else if (m.type === 'waiting') {
+      setWaitStatus(m.startAt);
+    } else if (m.type === 'wait_go' || m.type === 'intro') {
+      setWaitStatus(null);
+    } else if (m.type === 'setting' && m.settings) {
+      if (m.packs) renderPacks(m.packs, m.settings.pack);
+      if (m.topics) renderTopics(m.topics);
+      applySettings(m.settings);
+    } else if (m.type === 'student_join') {
+      log(`${m.seated ? '🎒' : '🚪'} ${esc(m.user.name)} ${m.seated ? 'vào ngồi' : 'chờ ngoài hành lang'} (tổng ${m.totalStudents})`);
+    } else if (m.type === 'chat') {
+      log(`💬 ${esc(m.user.name)}: ${esc(m.text)}`);
+    } else if (m.type === 'gift') {
+      log(`🎁 ${esc(m.user.name)} tặng ${esc(m.giftName)} (${m.coins} xu) → ${esc(m.thanks.tierName)} ${esc(m.thanks.code)}${m.evicted ? ' · ' + esc(m.evicted.name) + ' ra hành lang' : ''}`);
+    } else if (m.type === 'like') {
+      log(`❤️ ${esc(m.user.name)} +${m.count} like`);
+    }
+  };
+
+  ws.onclose = () => setTimeout(connectWS, 2000);
+}
+
+function updateStatus(m) {
+  if (!m) return;
+  $('#dot').className = 'dot ' + (m.status || 'idle');
+  $('#stxt').innerHTML = `${LABEL[m.status] || m.status}${m.username ? ' · <b>@' + esc(m.username) + '</b>' : ''}${m.error ? '<br><small style="color:#ef4444">' + esc(m.error) + '</small>' : ''}`;
+  if (m.username && !$('#user').value) $('#user').value = m.username;
+}
+
+connectWS();
+</script>
+</body>
+</html>

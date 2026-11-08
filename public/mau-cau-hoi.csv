@@ -1,0 +1,16 @@
+﻿type,topic,prompt,sub,answer,wrong1,wrong2,wrong3,explain,emoji
+fill,Vocabulary,Điền từ tiếng Anh,quả táo,apple,,,,apple = quả táo,🍎
+fill,Vocabulary,Điền từ tiếng Anh,thư viện,library,,,,library = thư viện,📚
+fill,Vocabulary,Điền từ tiếng Anh,bệnh viện,hospital,,,,hospital = bệnh viện,🏥
+fill,Vocabulary,Điền từ tiếng Anh,mùa hè,summer,,,,summer = mùa hè,☀️
+fill,Vocabulary,Điền từ tiếng Anh,thân thiện,friendly,,,,friendly = thân thiện,😊
+mcq,Grammar,She ___ to school by bus every day.,Chọn đáp án đúng,goes,go,going,gone,Chủ ngữ số ít (She) ở hiện tại đơn thêm -es: goes,🚌
+mcq,Grammar,We ___ at home last night.,Chọn đáp án đúng,were,was,are,be,Chủ ngữ số nhiều (We) ở quá khứ dùng were,🏠
+mcq,Grammar,They are interested ___ learning English.,Chọn đáp án đúng,in,on,at,for,Cấu trúc: be interested in + V-ing (quan tâm/thích cái gì),📘
+mcq,Sentence,Cô ấy đang nấu bữa tối trong bếp.,Chọn câu tiếng Anh đúng,She is cooking dinner in the kitchen.,She cooking dinner in the kitchen.,She is cook dinner in the kitchen.,She are cooking dinner in the kitchen.,Thì hiện tại tiếp diễn: S + am/is/are + V-ing,🍳
+mcq,Sentence,Bạn có thể giúp tôi một chút được không?,Chọn câu tiếng Anh đúng,Can you help me for a moment?,Do you can help me for a moment?,Can you helps me for a moment?,Can you to help me for a moment?,Sau động từ khuyết thiếu Can + động từ nguyên mẫu (help),🤝
+translate,Translation,Tôi thường dậy sớm vào buổi sáng.,Dịch sang tiếng Anh,I usually get up early in the morning.|I often get up early in the morning.|I usually wake up early in the morning.,,,,get up / wake up early = dậy sớm,⏰
+translate,Translation,Hôm qua trời mưa rất to.,Dịch sang tiếng Anh,It rained heavily yesterday.|Yesterday it rained heavily.|It rained very hard yesterday.,,,,rain heavily = mưa to,🌧️
+translate,Translation,Anh trai tôi làm việc ở một ngân hàng.,Dịch sang tiếng Anh,My brother works at a bank.|My brother works in a bank.,,,,work at/in a bank = làm việc ở ngân hàng,🏦
+translate,Translation,Chúng tôi rất thích nghe nhạc tiếng Anh.,Dịch sang tiếng Anh,We really like listening to English music.|We love listening to English music.|We really enjoy listening to English music.,,,,like/love/enjoy + V-ing,🎵
+translate,Translation,Đừng quên mang theo ô nhé!,Dịch sang tiếng Anh,Don't forget to bring an umbrella.|Do not forget to bring an umbrella.|Don't forget to take an umbrella.,,,,Don't forget to + V = Đừng quên làm gì,☂️
